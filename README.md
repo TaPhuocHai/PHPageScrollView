@@ -7,6 +7,10 @@ PHPageScrollView
 * Have function : deleteViewAtIndex for delete any view in PHPageScrollView
 
 ## Examples
+
+<img src="https://raw.githubusercontent.com/taphuochai/PHPageScrollView/master/example.png"/ width=320 height=480>
+
+
 ## Usage
 
 * Init and set property
@@ -14,7 +18,7 @@ PHPageScrollView
          self.pageScrollView.delegate = self;
          self.pageScrollView.dataSource = self;
          
-* call `reloadData` to load view
+* Call `reloadData` to load view
 
          [self.pageScrollView reloadData];
          
