@@ -21,6 +21,8 @@
     CGPoint   _firstCenterPoint;
     CGSize    _cellSize;
     NSInteger _numberOfCell;
+    
+    CGPoint  _lastVelocityScrollView;
 }
 
 - (void)initializeValue
@@ -235,27 +237,59 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
+    _lastVelocityScrollView = CGPointMake(0, 0);
+    
     if (self.delegate && [self.delegate respondsToSelector:@selector(pageScrollViewWillBeginDragging:)]) {
         [self.delegate pageScrollViewWillBeginDragging:self];
     }
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    [self updateCurrentPage];
-    [self scrollToPage:self.currentPageIndex animation:YES];
-}
-
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
-    
     if (!decelerate) {
         [self updateCurrentPage];
         [self scrollToPage:self.currentPageIndex animation:YES];
     }
 }
 
-#pragma mark - 
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+{
+    [scrollView setContentOffset:scrollView.contentOffset animated:NO];
+    
+    [self updateCurrentPage];
+    if (ABS(_lastVelocityScrollView.x) > 0.5) {
+        // next
+        if (_lastVelocityScrollView.x > 0.5) {
+            if (_currentPageIndex + 1 < _numberOfCell) {
+                _currentPageIndex += 1;
+            }
+        }
+        // prev
+        else {
+            if (_currentPageIndex - 1 >= 0) {
+                _currentPageIndex -= 1;
+            }
+        }
+    }
+    
+    [self scrollToPage:self.currentPageIndex animation:YES];
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    _lastVelocityScrollView = velocity;
+}
+
+
+//- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+//{
+//    [self updateCurrentPage];
+//    [self scrollToPage:self.currentPageIndex animation:YES];
+//}
+
+#pragma mark -
 
 - (void)updateCurrentPage
 {
